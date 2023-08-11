@@ -1,41 +1,56 @@
 import java.util.Random;
 
 public class HillClimbingAlgorithm {
+    public static void main(String[] args) {
+        char[] best = generateRandomSolution(13);
+        int bestScore = evaluate(best);
 
-    // Define the objective function to be optimized
-    public static double objectiveFunction(double x) {
-        return -(x * x) + 4 * x - 4; // Example quadratic function
-    }
+        while (true) {
+            System.out.println("Best score so far: " + bestScore + "Solution: " + new String(best));
 
-    // Hill Climbing algorithm
-    public static double hillClimbing(double start, double stepSize, int maxIterations) {
-        double currentSolution = start;
-        double currentValue = objectiveFunction(currentSolution);
-        Random rand = new Random();
+            if (bestScore == 0) {
+                break;
+            }
 
-        for (int i = 0; i < maxIterations; i++) {
-            double neighbor = currentSolution + (rand.nextDouble() * 2 - 1) * stepSize; // Generate a neighbor within
-            // stepSize range
-            double neighborValue = objectiveFunction(neighbor);
+            char[] newSolution = best.clone();
+            mutateSolution(newSolution);
 
-            if (neighborValue > currentValue) {
-                currentSolution = neighbor;
-                currentValue = neighborValue;
+            int score = evaluate(newSolution);
+
+            if (score < bestScore) {
+                best = newSolution;
+                bestScore = score;
             }
         }
-
-        return currentSolution;
     }
 
-    public static void main(String[] args) {
-        double start = 0.0; // Starting point for the search
-        double stepSize = 0.03; // Step size for generating neighbors
-        int maxIterations = 99; // Maximum number of iterations
+    public static char[] generateRandomSolution(int length) {
+        char[] solution = new char[length];
+        Random random = new Random();
 
-        double solution = hillClimbing(start, stepSize, maxIterations);
-        double value = objectiveFunction(solution);
+        for (int i = 0; i < length; i++) {
+            solution[i] = (char) (random.nextInt(94) + 32);
+        }
 
-        System.out.println("Optimal solution: " + solution);
-        System.out.println("Optimal value: " + value);
+        return solution;
+    }
+
+    public static int evaluate(char[] solution) {
+        String target = "Hello, World!";
+        int diff = 0;
+
+        for (int i = 0; i < target.length(); i++) {
+            char s = solution[i];
+            char t = target.charAt(i);
+            diff += Math.abs((int) s - (int) t);
+        }
+
+        return diff;
+    }
+
+    public static void mutateSolution(char[] solution) {
+        Random random = new Random();
+        int index = random.nextInt(solution.length);
+        solution[index] = (char) (random.nextInt(94) + 32);
     }
 }
